@@ -58,19 +58,16 @@ def create_property(request):
     """Create new property (agent/admin only)"""
     try:
         data = request.json_body
-        
-        # Validate required fields
+
         required_fields = ['title', 'price', 'type', 'location']
         for field in required_fields:
             if field not in data:
                 raise HTTPBadRequest(f'Missing required field: {field}')
-        
-        # Validate property type
+
         valid_types = ['house', 'apartment', 'land', 'commercial']
         if data['type'] not in valid_types:
             raise HTTPBadRequest(f'Invalid type. Must be one of: {", ".join(valid_types)}')
-        
-        # Create property
+
         property = Property(
             agent_id=request.current_user.id,
             title=data['title'],
@@ -82,29 +79,27 @@ def create_property(request):
             bathrooms=data.get('bathrooms'),
             area=data.get('area')
         )
-        
+
         DBSession.add(property)
-        DBSession.flush()
-        
-        # Add photos if provided
-        if 'photos' in data and isinstance(data['photos'], list):
-            for photo_url in data['photos']:
-                photo = PropertyPhoto(
-                    property_id=property.id,
-                    photo_url=photo_url
-                )
+        DBSession.flush()  # <-- property.id terisi, object masih connected
+
+        # Add photos
+        if 'photos' in data:
+            for url in data['photos']:
+                photo = PropertyPhoto(property_id=property.id, photo_url=url)
                 DBSession.add(photo)
-        
+
+        # SERIALIZE DI SINI — sebelum commit
+        response_data = property.to_dict(include_photos=True)
+
         transaction.commit()
-        
+
         return {
-            'success': True,
-            'message': 'Property created successfully',
-            'property': property.to_dict(include_photos=True)
+            "success": True,
+            "message": "Property created successfully",
+            "property": response_data
         }
-        
-    except HTTPBadRequest:
-        raise
+
     except Exception as e:
         transaction.abort()
         raise HTTPBadRequest(str(e))
