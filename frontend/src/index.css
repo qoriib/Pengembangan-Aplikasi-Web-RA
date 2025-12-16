@@ -1,0 +1,134 @@
+:root {
+  color-scheme: light;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  background: radial-gradient(circle at 20% 20%, rgba(90, 165, 255, 0.12), transparent 35%),
+    radial-gradient(circle at 80% 0%, rgba(255, 170, 120, 0.12), transparent 30%),
+    #0f172a;
+  color: #e2e8f0;
+  min-height: 100vh;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+code {
+  background: rgba(226, 232, 240, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+main.page {
+  max-width: 1100px;
+  padding: 56px 24px 96px;
+  margin: 0 auto;
+}
+
+.hero {
+  margin-bottom: 32px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  color: #93c5fd;
+  margin: 0 0 8px;
+}
+
+h1 {
+  font-size: clamp(1.8rem, 2.8vw, 2.8rem);
+  margin: 0 0 12px;
+  color: #f8fafc;
+}
+
+.lede {
+  max-width: 720px;
+  margin: 0 0 16px;
+  color: #cbd5e1;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.status-detail {
+  margin: 10px 0 0;
+  color: #cbd5e1;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  background: #cbd5e1;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06);
+}
+
+.dot.idle {
+  background: #fbbf24;
+}
+
+.dot.ok {
+  background: #22c55e;
+}
+
+.dot.error {
+  background: #ef4444;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 60px rgba(0, 0, 0, 0.3);
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: #f8fafc;
+}
+
+ol {
+  padding-left: 18px;
+  margin: 0;
+  color: #d1d5db;
+}
+
+li {
+  margin-bottom: 8px;
+}
+
+.code-block {
+  background: rgba(226, 232, 240, 0.08);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  overflow-x: auto;
+  color: #cbd5e1;
+}
