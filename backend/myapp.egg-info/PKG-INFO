@@ -11,8 +11,8 @@ Classifier: Framework :: Pyramid
 Classifier: Topic :: Internet :: WWW/HTTP
 Classifier: Topic :: Internet :: WWW/HTTP :: WSGI :: Application
 Requires-Dist: pyramid
-Requires-Dist: SQLAlchemy
-Requires-Dist: psycopg2-binary
+Requires-Dist: SQLAlchemy==2.0.36
+Requires-Dist: psycopg[binary]==3.3.2
 Requires-Dist: zope.sqlalchemy
 Requires-Dist: pyramid_tm
 Requires-Dist: waitress

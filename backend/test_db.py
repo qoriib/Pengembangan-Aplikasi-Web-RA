@@ -1,7 +1,7 @@
 
 # -*- coding: utf-8 -*-
-import psycopg2
-from psycopg2 import sql
+import psycopg
+from psycopg import sql
 import sys
 
 # Set UTF-8 encoding for output
@@ -21,12 +21,12 @@ working_password = None
 for pwd in passwords:
     try:
         print(f"Trying password: '{pwd if pwd else '(empty)'}'...")
-        conn = psycopg2.connect(
+        conn = psycopg.connect(
             host="localhost",
             port=5432,
             user="postgres",
             password=pwd,
-            database="postgres"  # Connect to default database first
+            dbname="postgres"  # Connect to default database first
         )
         print(f"[SUCCESS] Connected with password: '{pwd if pwd else '(empty)'}'")
         working_password = pwd
@@ -43,12 +43,12 @@ for pwd in passwords:
             cur.close()
             conn.close()
             
-            conn = psycopg2.connect(
+            conn = psycopg.connect(
                 host="localhost",
                 port=5432,
                 user="postgres",
                 password=pwd,
-                database="listingdb"
+                dbname="listingdb"
             )
             cur = conn.cursor()
             
@@ -76,7 +76,7 @@ for pwd in passwords:
         conn.close()
         break
         
-    except psycopg2.OperationalError as e:
+    except psycopg.OperationalError as e:
         if "password authentication failed" in str(e):
             print(f"[FAILED] Wrong password")
         else:

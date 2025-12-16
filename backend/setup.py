@@ -2,8 +2,8 @@ from setuptools import setup, find_packages
 
 requires = [
     'pyramid',
-    'SQLAlchemy',
-    'psycopg2-binary',
+    'SQLAlchemy==2.0.36',
+    'psycopg[binary]==3.3.2',
     'zope.sqlalchemy',
     'pyramid_tm',
     'waitress',

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import psycopg2
-from psycopg2 import sql
+import psycopg
+from psycopg import sql
 import sys
 
 # Set UTF-8 encoding for output
@@ -10,12 +10,12 @@ if sys.platform == 'win32':
 
 try:
     # Connect to default postgres database
-    conn = psycopg2.connect(
+    conn = psycopg.connect(
         host="localhost",
         port=5432,
         user="postgres",
         password="123456",
-        database="postgres"
+        dbname="postgres"
     )
     
     # Check if listingdb exists
@@ -34,12 +34,12 @@ try:
         conn.close()
         
         # Reconnect with autocommit to create database
-        conn = psycopg2.connect(
+        conn = psycopg.connect(
             host="localhost",
             port=5432,
             user="postgres",
             password="123456",
-            database="postgres"
+            dbname="postgres"
         )
         conn.autocommit = True
         cur = conn.cursor()
@@ -49,12 +49,12 @@ try:
         conn.close()
         
         # Reconnect to new database to verify
-        conn = psycopg2.connect(
+        conn = psycopg.connect(
             host="localhost",
             port=5432,
             user="postgres",
             password="123456",
-            database="listingdb"
+            dbname="listingdb"
         )
         print("[SUCCESS] Connected to 'listingdb'")
     
@@ -64,12 +64,12 @@ try:
     else:
         cur.close()
         conn.close()
-        conn = psycopg2.connect(
+        conn = psycopg.connect(
             host="localhost",
             port=5432,
             user="postgres",
             password="123456",
-            database="listingdb"
+            dbname="listingdb"
         )
         cur = conn.cursor()
     
