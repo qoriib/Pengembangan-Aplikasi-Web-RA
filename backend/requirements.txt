@@ -4,6 +4,7 @@ psycopg[binary]==3.3.2
 zope.sqlalchemy==3.1
 pyramid_tm==2.5
 waitress==2.1.2
+uwsgi==2.0.26
 PyJWT==2.8.0
 bcrypt==4.1.2
 transaction==4.0

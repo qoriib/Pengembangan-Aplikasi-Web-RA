@@ -18,6 +18,10 @@ venv/
 .env
 .env.*
 
+# Logs
+logs/
+*.log
+
 # Alembic migration artifacts
 alembic/versions/*.pyc
 alembic/versions/*.pyo
