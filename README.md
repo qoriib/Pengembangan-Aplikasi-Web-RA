@@ -19,7 +19,7 @@ frontend/   # React + Vite + Tailwind
    cd backend
    python -m venv .venv
    source .venv/bin/activate  # Windows: .venv\Scripts\activate
-   pip install -r requirements.txt
+   pip install -e .
    ```
 2) Konfigurasi `development.ini` (koneksi DB PostgreSQL). Pastikan DB berjalan.
 3) Migrasi dan seed:
