@@ -1,50 +1,57 @@
 import { Link, NavLink } from 'react-router-dom';
 
-const Navbar = ({ apiBase, user, onLogout }) => {
-  return (
-    <header className="navbar">
-      <div className="navbar__inner">
-        <div className="navbar__brand">
-          <Link to="/" className="navbar__logo">E</Link>
-          <Link to="/">
-            <div className="navbar__title">Estatery</div>
-            <div className="navbar__subtitle">Find your place to live</div>
-          </Link>
-        </div>
+const linkBase = 'px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:text-blue-600 hover:bg-blue-50';
 
-        <nav className="navbar__links" aria-label="Primary">
-          <NavLink to="/" className="navbar__link">
+const Navbar = ({ user, onLogout }) => {
+  return (
+    <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <div className="section flex items-center justify-between gap-6">
+        <Link to="/" className="flex items-center gap-2 font-bold text-slate-900">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white">E</span>
+          <span>Estatery</span>
+        </Link>
+
+        <nav className="hidden md:flex items-center gap-2" aria-label="Primary">
+          <NavLink to="/" className={linkBase}>
             Home
           </NavLink>
-          <NavLink to="/auth" className="navbar__link">
-            Auth
-          </NavLink>
+          {!user && (
+            <NavLink to="/auth" className={linkBase}>
+              Auth
+            </NavLink>
+          )}
+          {user?.role === 'agent' && (
+            <NavLink to="/agent" className={linkBase}>
+              Agent
+            </NavLink>
+          )}
+          {user?.role === 'buyer' && (
+            <NavLink to="/buyer" className={linkBase}>
+              Buyer
+            </NavLink>
+          )}
+          {user && (
+            <NavLink to="/profile" className={linkBase}>
+              Profile
+            </NavLink>
+          )}
         </nav>
 
-        <div className="navbar__actions">
-          <div className="navbar__api-compact">
-            <span className="dot ok" aria-hidden />
-            <span className="navbar__api-value">{apiBase || 'http://localhost:6543'}</span>
-          </div>
+        <div className="flex items-center gap-3">
           {user ? (
             <>
-              <div className="navbar__avatar" aria-label="Profile">
-                <span>{user.name?.slice(0, 2).toUpperCase() || 'ME'}</span>
+              <div className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-slate-100 text-sm font-bold text-slate-800" aria-label="Profile">
+                {user.name?.slice(0, 2).toUpperCase() || 'ME'}
               </div>
-              <button className="btn nav-btn" onClick={onLogout}>
+              <button className="btn btn-ghost" onClick={onLogout}>
                 Logout
               </button>
             </>
           ) : (
-            <Link className="btn nav-btn" to="/auth">
+            <Link className="btn btn-primary" to="/auth">
               Sign in
             </Link>
           )}
-          <button className="navbar__menu" aria-label="Open menu">
-            <span />
-            <span />
-            <span />
-          </button>
         </div>
       </div>
     </header>

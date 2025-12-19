@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { login as apiLogin, register as apiRegister, me as apiMe } from '../services/api';
+import { login as apiLogin, register as apiRegister, me as apiMe, updateProfile as apiUpdateProfile } from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -44,7 +44,13 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const value = { user, loading, error, setError, login, register, logout };
+  const updateProfile = async (payload) => {
+    const { user: updated } = await apiUpdateProfile(payload);
+    setUser(updated);
+    return updated;
+  };
+
+  const value = { user, loading, error, setError, login, register, logout, updateProfile };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

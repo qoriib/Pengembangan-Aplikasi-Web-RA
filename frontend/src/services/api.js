@@ -38,6 +38,13 @@ export async function me() {
   return request('/api/auth/me');
 }
 
+export async function updateProfile(payload) {
+  return request('/api/auth/profile', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function fetchProperties(params = {}) {
   const query = new URLSearchParams(params).toString();
   const path = query ? `/api/properties?${query}` : '/api/properties';
@@ -48,6 +55,19 @@ export async function createProperty(payload) {
   return request('/api/properties/create', {
     method: 'POST',
     body: JSON.stringify(payload),
+  });
+}
+
+export async function updateProperty(id, payload) {
+  return request(`/api/properties/update/${id}`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteProperty(id) {
+  return request(`/api/properties/delete/${id}`, {
+    method: 'DELETE',
   });
 }
 
@@ -63,6 +83,12 @@ export async function sendInquiry(payload) {
     method: 'POST',
     body: JSON.stringify(payload),
   });
+}
+
+export async function listInquiries(params = {}) {
+  const query = new URLSearchParams(params).toString();
+  const path = query ? `/api/inquiries?${query}` : '/api/inquiries';
+  return request(path, { method: 'GET' });
 }
 
 export const apiBaseURL = baseURL;

@@ -2,21 +2,7 @@ import { useEffect, useState } from 'react';
 import PropertyCard from '../components/PropertyCard';
 import { addFavorite, fetchProperties, sendInquiry } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-
-const featureCards = [
-  {
-    title: 'Buyer experience',
-    points: ['Browse & filter harga/tipe/lokasi', 'Simpan favorit', 'Kirim inquiry ke agent'],
-  },
-  {
-    title: 'Agent cockpit',
-    points: ['CRUD properti + foto', 'Kelola inquiries', 'Dashboard cepat'],
-  },
-  {
-    title: 'Keamanan',
-    points: ['Auth JWT', 'Role buyer/agent', 'Protected routes'],
-  },
-];
+import SectionHeader from '../components/SectionHeader';
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -71,58 +57,24 @@ export default function HomePage() {
   };
 
   return (
-    <main className="page landing">
-      <section className="hero landing-hero">
-        <div className="landing-hero__content">
-          <p className="eyebrow">Platform listing properti</p>
-          <h1>Bangun portal jual/sewa dengan React + Pyramid API</h1>
-          <p className="lede">
-            Listing, inquiry, favorites, dan dashboard agent dalam satu stack. Mulai dengan login/register, lalu kelola listing dan interaksi.
-          </p>
-        </div>
-      </section>
+    <main className="section space-y-6">
+      <SectionHeader eyebrow="Listings" title="Data Properti dari API" subtitle={message} />
 
-      <section className="feature-section" id="features">
-        <div className="section-header">
-          <p className="eyebrow">Fitur</p>
-          <h2>Semua kebutuhan listing properti</h2>
-        </div>
-        <div className="feature-grid">
-          {featureCards.map((card) => (
-            <article key={card.title} className="feature-card">
-              <h3>{card.title}</h3>
-              <ul>
-                {card.points.map((point) => (
-                  <li key={point}>{point}</li>
-                ))}
-              </ul>
-            </article>
+      {loading ? (
+        <p className="text-slate-600">Memuat...</p>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {properties.map((property) => (
+            <PropertyCard
+              key={property.id}
+              property={property}
+              favorite={false}
+              onFavorite={user?.role === 'buyer' ? handleFavorite : null}
+              onInquiry={user ? handleInquiry : null}
+            />
           ))}
         </div>
-      </section>
-
-      <section className="showcase" id="properties">
-        <div className="section-header">
-          <p className="eyebrow">Listings</p>
-          <h2>Data dari API</h2>
-          {message && <p className="status-detail">{message}</p>}
-        </div>
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="property-grid">
-            {properties.map((property) => (
-              <PropertyCard
-                key={property.id}
-                property={property}
-                favorite={false}
-                onFavorite={user?.role === 'buyer' ? handleFavorite : null}
-                onInquiry={user ? handleInquiry : null}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+      )}
     </main>
   );
 }
