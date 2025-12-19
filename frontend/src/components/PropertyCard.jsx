@@ -5,7 +5,7 @@ const formatPrice = (value) =>
     maximumFractionDigits: 0,
   }).format(value);
 
-const PropertyCard = ({ property, favorite }) => {
+const PropertyCard = ({ property, favorite, onFavorite, onInquiry }) => {
   return (
     <article className="property-card">
       <div
@@ -25,6 +25,18 @@ const PropertyCard = ({ property, favorite }) => {
           <span>{property.beds} bd</span>
           <span>{property.baths} ba</span>
           <span>{property.area} sqm</span>
+        </div>
+        <div className="property-card__actions">
+          {onFavorite && (
+            <button className="btn small" onClick={() => onFavorite(property.id)}>
+              {favorite ? 'Favorited' : 'Save favorite'}
+            </button>
+          )}
+          {onInquiry && (
+            <button className="btn ghost small" onClick={() => onInquiry(property.id)}>
+              Inquiry
+            </button>
+          )}
         </div>
       </div>
     </article>

@@ -1,31 +1,24 @@
-const Navbar = ({ apiBase }) => {
+import { Link, NavLink } from 'react-router-dom';
+
+const Navbar = ({ apiBase, user, onLogout }) => {
   return (
     <header className="navbar">
       <div className="navbar__inner">
         <div className="navbar__brand">
-          <div className="navbar__logo">E</div>
-          <div>
+          <Link to="/" className="navbar__logo">E</Link>
+          <Link to="/">
             <div className="navbar__title">Estatery</div>
             <div className="navbar__subtitle">Find your place to live</div>
-          </div>
+          </Link>
         </div>
 
         <nav className="navbar__links" aria-label="Primary">
-          <a href="#properties" className="navbar__link navbar__link--active">
-            Rent
-          </a>
-          <a href="#properties" className="navbar__link">
-            Buy
-          </a>
-          <a href="#properties" className="navbar__link">
-            Sell
-          </a>
-          <a href="#dashboard" className="navbar__link">
-            Manage Property
-          </a>
-          <a href="#features" className="navbar__link">
-            Resources
-          </a>
+          <NavLink to="/" className="navbar__link">
+            Home
+          </NavLink>
+          <NavLink to="/auth" className="navbar__link">
+            Auth
+          </NavLink>
         </nav>
 
         <div className="navbar__actions">
@@ -33,12 +26,20 @@ const Navbar = ({ apiBase }) => {
             <span className="dot ok" aria-hidden />
             <span className="navbar__api-value">{apiBase || 'http://localhost:6543'}</span>
           </div>
-          <a className="btn nav-btn" href="#login">
-            Sign in
-          </a>
-          <div className="navbar__avatar" aria-label="Profile">
-            <span>JD</span>
-          </div>
+          {user ? (
+            <>
+              <div className="navbar__avatar" aria-label="Profile">
+                <span>{user.name?.slice(0, 2).toUpperCase() || 'ME'}</span>
+              </div>
+              <button className="btn nav-btn" onClick={onLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link className="btn nav-btn" to="/auth">
+              Sign in
+            </Link>
+          )}
           <button className="navbar__menu" aria-label="Open menu">
             <span />
             <span />
