@@ -14,6 +14,27 @@ a {
   @apply text-blue-600 hover:text-blue-700;
 }
 
+/* Normalize base typography and elements */
+h1, h2, h3, h4, h5, h6 {
+  @apply font-bold text-slate-900;
+}
+
+p {
+  @apply leading-relaxed text-slate-700;
+}
+
+ul, ol {
+  @apply list-none p-0 m-0;
+}
+
+button {
+  @apply focus:outline-none;
+}
+
+img {
+  @apply block;
+}
+
 .btn {
   @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 font-semibold transition shadow-sm;
 }
@@ -48,8 +69,12 @@ a {
   @apply grid gap-3 rounded-xl border border-slate-200 px-3 py-3 text-sm items-center;
 }
 
+.table-actions {
+  @apply inline-flex items-center gap-3;
+}
+
 .section {
-  @apply max-w-6xl w-full mx-auto px-4 py-6;
+  @apply max-w-6xl w-full mx-auto px-4 py-4;
 }
 
 .page-title {
@@ -66,4 +91,28 @@ a {
 
 .tab-btn.active {
   @apply border-blue-500 bg-blue-50 text-blue-700;
+}
+
+.toast-stack {
+  @apply fixed top-6 right-6 flex flex-col gap-3 z-50;
+}
+
+.toast {
+  @apply min-w-[240px] max-w-md rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-lg flex items-center justify-between gap-3 text-sm;
+}
+
+.toast-info {
+  @apply border-blue-200 text-blue-800 bg-blue-50;
+}
+
+.toast-success {
+  @apply border-green-200 text-green-800 bg-green-50;
+}
+
+.toast-error {
+  @apply border-red-200 text-red-800 bg-red-50;
+}
+
+.toast button {
+  @apply text-slate-500 hover:text-slate-700 text-lg leading-none;
 }

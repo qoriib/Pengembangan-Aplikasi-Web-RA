@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { createProperty, updateProperty, deleteProperty, fetchProperties, listInquiries } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import TabBar from '../components/TabBar';
 import SectionHeader from '../components/SectionHeader';
 import Table from '../components/Table';
@@ -28,10 +29,10 @@ const emptyForm = {
 export default function AgentDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [properties, setProperties] = useState([]);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
-  const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('properties');
   const [inquiries, setInquiries] = useState([]);
@@ -52,10 +53,10 @@ export default function AgentDashboard() {
   const loadProps = async () => {
     try {
       setLoading(true);
-      const { properties: list } = await fetchProperties();
+      const { properties: list } = await fetchProperties({ agent_id: user?.id });
       setProperties(list || []);
     } catch (err) {
-      setStatus('Gagal memuat data properti');
+      showToast('Gagal memuat data properti', 'error');
     } finally {
       setLoading(false);
     }
@@ -63,7 +64,6 @@ export default function AgentDashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus('');
     const payload = {
       title: form.title,
       description: form.description,
@@ -81,16 +81,16 @@ export default function AgentDashboard() {
     try {
       if (editingId) {
         await updateProperty(editingId, payload);
-        setStatus('Properti diperbarui');
+        showToast('Properti diperbarui', 'success');
       } else {
         await createProperty(payload);
-        setStatus('Properti dibuat');
+        showToast('Properti dibuat', 'success');
       }
       setForm(emptyForm);
       setEditingId(null);
       loadProps();
     } catch (err) {
-      setStatus(err.message || 'Gagal menyimpan properti');
+      showToast(err.message || 'Gagal menyimpan properti', 'error');
     }
   };
 
@@ -100,7 +100,7 @@ export default function AgentDashboard() {
       const { inquiries: list } = await listInquiries();
       setInquiries(list || []);
     } catch (err) {
-      setStatus('Gagal memuat inquiries');
+      showToast('Gagal memuat inquiries', 'error');
     } finally {
       setLoadingInq(false);
     }
@@ -126,10 +126,10 @@ export default function AgentDashboard() {
     if (!confirm('Hapus properti ini?')) return;
     try {
       await deleteProperty(id);
-      setStatus('Properti dihapus');
+      showToast('Properti dihapus', 'success');
       loadProps();
     } catch (err) {
-      setStatus(err.message || 'Gagal menghapus properti');
+      showToast(err.message || 'Gagal menghapus properti', 'error');
     }
   };
 
@@ -148,8 +148,6 @@ export default function AgentDashboard() {
           if (id === 'inquiries' && !inquiries.length) loadInquiries();
         }}
       />
-      {status && <p className="text-sm text-slate-700">{status}</p>}
-
       <section className={`grid gap-4 lg:grid-cols-2 ${tab === 'properties' ? '' : 'hidden'}`}>
         <div className="card p-5 space-y-3">
           <SectionHeader title="Dashboard Agent" subtitle="Kelola listing properti Anda." />
@@ -279,14 +277,18 @@ export default function AgentDashboard() {
           <p className="text-slate-600">Belum ada inquiry.</p>
         ) : (
           <Table
-            columns={['Property', 'Pesan', 'Buyer']}
-            gridTemplateColumns="1.5fr 2fr 1fr"
+            columns={['Property', 'Pesan', 'Buyer', 'Kontak']}
+            gridTemplateColumns="1.5fr 2fr 1fr 1fr"
             data={inquiries}
             renderRow={(i) => (
-              <div key={i.id} className="table-row" style={{ gridTemplateColumns: '1.5fr 2fr 1fr' }}>
+              <div key={i.id} className="table-row" style={{ gridTemplateColumns: '1.5fr 2fr 1fr 1fr' }}>
                 <span className="cell-strong">{i.property_title || i.property?.title || '-'}</span>
                 <span className="inquiry-message">{i.message}</span>
-                <span className="cell-muted">{i.buyer_email || i.buyer?.email || '-'}</span>
+                <span className="cell-muted">{i.buyer_name || i.buyer?.name || '-'}</span>
+                <span className="cell-muted">
+                  {i.buyer_email || i.buyer?.email || '-'}
+                  {i.buyer_phone ? ` / ${i.buyer_phone}` : ''}
+                </span>
               </div>
             )}
           />

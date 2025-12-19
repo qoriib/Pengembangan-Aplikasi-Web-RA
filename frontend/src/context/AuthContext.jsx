@@ -10,6 +10,14 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const cachedUser = localStorage.getItem('user');
+    if (cachedUser) {
+      try {
+        setUser(JSON.parse(cachedUser));
+      } catch (e) {
+        localStorage.removeItem('user');
+      }
+    }
     if (!token) {
       setLoading(false);
       return;
@@ -18,6 +26,7 @@ export function AuthProvider({ children }) {
       .then(({ user }) => setUser(user))
       .catch(() => {
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setUser(null);
       })
       .finally(() => setLoading(false));
@@ -27,6 +36,7 @@ export function AuthProvider({ children }) {
     setError('');
     const { token, user } = await apiLogin(email, password);
     localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
     setUser(user);
     return user;
   };
@@ -35,18 +45,21 @@ export function AuthProvider({ children }) {
     setError('');
     const { token, user } = await apiRegister(payload);
     localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
     setUser(user);
     return user;
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
   };
 
   const updateProfile = async (payload) => {
     const { user: updated } = await apiUpdateProfile(payload);
     setUser(updated);
+    localStorage.setItem('user', JSON.stringify(updated));
     return updated;
   };
 

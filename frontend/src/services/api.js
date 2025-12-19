@@ -51,6 +51,10 @@ export async function fetchProperties(params = {}) {
   return request(path, { method: 'GET' });
 }
 
+export async function fetchPropertyDetail(id) {
+  return request(`/api/properties/detail/${id}`, { method: 'GET' });
+}
+
 export async function createProperty(payload) {
   return request('/api/properties/create', {
     method: 'POST',
@@ -60,7 +64,7 @@ export async function createProperty(payload) {
 
 export async function updateProperty(id, payload) {
   return request(`/api/properties/update/${id}`, {
-    method: 'POST',
+    method: 'PUT',
     body: JSON.stringify(payload),
   });
 }
@@ -78,6 +82,14 @@ export async function addFavorite(property_id) {
   });
 }
 
+export async function listFavorites() {
+  return request('/api/favorites', { method: 'GET' });
+}
+
+export async function deleteFavorite(property_id) {
+  return request(`/api/favorites/remove/${property_id}`, { method: 'DELETE' });
+}
+
 export async function sendInquiry(payload) {
   return request('/api/inquiries/create', {
     method: 'POST',
@@ -89,6 +101,10 @@ export async function listInquiries(params = {}) {
   const query = new URLSearchParams(params).toString();
   const path = query ? `/api/inquiries?${query}` : '/api/inquiries';
   return request(path, { method: 'GET' });
+}
+
+export async function deleteInquiry(id) {
+  return request(`/api/inquiries/delete/${id}`, { method: 'DELETE' });
 }
 
 export const apiBaseURL = baseURL;

@@ -28,5 +28,10 @@ class Inquiry(Base):
             'property_id': self.property_id,
             'buyer_id': self.buyer_id,
             'message': self.message,
-            'date': self.date.isoformat() if self.date else None
+            'date': self.date.isoformat() if self.date else None,
+            'property_title': self.property.title if self.property else None,
+            'property_location': self.property.location if self.property else None,
+            'buyer_name': self.buyer.name if self.buyer else None,
+            'buyer_email': self.buyer.email if self.buyer else None,
+            'buyer_phone': self.buyer.phone if self.buyer else None,
         }

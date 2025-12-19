@@ -5,21 +5,16 @@ const linkBase = 'px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 hove
 const Navbar = ({ user, onLogout }) => {
   return (
     <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
-      <div className="section flex items-center justify-between gap-6">
-        <Link to="/" className="flex items-center gap-2 font-bold text-slate-900">
+      <div className="section flex flex-wrap items-center justify-between gap-4">
+        <Link to="/" className="flex items-center gap-2 font-bold text-slate-900 flex-shrink-0">
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white">E</span>
           <span>Estatery</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-2" aria-label="Primary">
+        <nav className="flex flex-wrap items-center gap-2 text-sm" aria-label="Primary">
           <NavLink to="/" className={linkBase}>
             Home
           </NavLink>
-          {!user && (
-            <NavLink to="/auth" className={linkBase}>
-              Auth
-            </NavLink>
-          )}
           {user?.role === 'agent' && (
             <NavLink to="/agent" className={linkBase}>
               Agent
@@ -30,6 +25,9 @@ const Navbar = ({ user, onLogout }) => {
               Buyer
             </NavLink>
           )}
+          <NavLink to="/compare" className={linkBase}>
+            Compare
+          </NavLink>
           {user && (
             <NavLink to="/profile" className={linkBase}>
               Profile
@@ -37,7 +35,7 @@ const Navbar = ({ user, onLogout }) => {
           )}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-shrink-0">
           {user ? (
             <>
               <div className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-slate-100 text-sm font-bold text-slate-800" aria-label="Profile">

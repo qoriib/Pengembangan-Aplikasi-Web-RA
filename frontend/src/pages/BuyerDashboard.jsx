@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { listInquiries, addFavorite, fetchProperties } from '../services/api';
+import { listInquiries, listFavorites, deleteInquiry, deleteFavorite } from '../services/api';
 import TabBar from '../components/TabBar';
 import SectionHeader from '../components/SectionHeader';
 import Table from '../components/Table';
+import { useToast } from '../context/ToastContext';
 
 const formatPrice = (value) =>
   new Intl.NumberFormat('id-ID', {
@@ -13,15 +14,27 @@ const formatPrice = (value) =>
     maximumFractionDigits: 0,
   }).format(value || 0);
 
+const formatDate = (value) => {
+  if (!value) return '-';
+  try {
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return '-';
+    return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+  } catch (e) {
+    return '-';
+  }
+};
+
 export default function BuyerDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [tab, setTab] = useState('inquiries');
   const [inquiries, setInquiries] = useState([]);
   const [favStatus, setFavStatus] = useState('');
   const [loadingInq, setLoadingInq] = useState(true);
-  const [properties, setProperties] = useState([]);
-  const [loadingProps, setLoadingProps] = useState(false);
+  const [favorites, setFavorites] = useState([]);
+  const [loadingFav, setLoadingFav] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -41,30 +54,41 @@ export default function BuyerDashboard() {
       const { inquiries: list } = await listInquiries();
       setInquiries(list || []);
     } catch (err) {
-      setFavStatus('Gagal memuat inquiries');
+      showToast('Gagal memuat inquiries', 'error');
     } finally {
       setLoadingInq(false);
     }
   };
 
-  const loadFavCandidates = async () => {
+  const loadFavorites = async () => {
     try {
-      setLoadingProps(true);
-      const { properties: list } = await fetchProperties();
-      setProperties(list || []);
+      setLoadingFav(true);
+      const { favorites: list } = await listFavorites();
+      setFavorites(list || []);
     } catch (err) {
-      setFavStatus('Gagal memuat properti');
+      showToast('Gagal memuat favorit', 'error');
     } finally {
-      setLoadingProps(false);
+      setLoadingFav(false);
     }
   };
 
-  const handleFavorite = async (id) => {
+  const handleDeleteInquiry = async (id) => {
     try {
-      await addFavorite(id);
-      setFavStatus('Ditambahkan ke favorit');
+      await deleteInquiry(id);
+      showToast('Inquiry dihapus', 'success');
+      loadInquiries();
     } catch (err) {
-      setFavStatus(err.message || 'Gagal menambah favorit');
+      showToast('Gagal menghapus inquiry', 'error');
+    }
+  };
+
+  const handleDeleteFavorite = async (propertyId) => {
+    try {
+      await deleteFavorite(propertyId);
+      showToast('Favorit dihapus', 'success');
+      loadFavorites();
+    } catch (err) {
+      showToast('Gagal menghapus favorit', 'error');
     }
   };
 
@@ -75,12 +99,12 @@ export default function BuyerDashboard() {
       <TabBar
         tabs={[
           { id: 'inquiries', label: 'Inquiries Saya' },
-          { id: 'favorites', label: 'Tambah Favorit' },
+          { id: 'favorites', label: 'Favorit Saya' },
         ]}
         activeId={tab}
         onChange={(id) => {
           setTab(id);
-          if (id === 'favorites' && !properties.length) loadFavCandidates();
+          if (id === 'favorites' && !favorites.length) loadFavorites();
         }}
       />
       {favStatus && <p className="text-sm text-slate-700">{favStatus}</p>}
@@ -93,14 +117,22 @@ export default function BuyerDashboard() {
           <p className="text-slate-600">Belum ada inquiry.</p>
         ) : (
           <Table
-            columns={['Property', 'Pesan', 'Tanggal']}
-            gridTemplateColumns="1.5fr 2fr 1fr"
+            columns={['Property', 'Pesan', 'Tanggal', 'Aksi']}
+            gridTemplateColumns="1.5fr 2fr 1fr auto"
             data={inquiries}
             renderRow={(i) => (
-              <div key={i.id} className="table-row" style={{ gridTemplateColumns: '1.5fr 2fr 1fr' }}>
-                <span className="cell-strong">{i.property_title || i.property?.title || '-'}</span>
+              <div key={i.id} className="table-row" style={{ gridTemplateColumns: '1.5fr 2fr 1fr auto' }}>
+                <span className="cell-strong">{i.property?.title || i.property_title || i.property_name || '-'}</span>
                 <span className="inquiry-message">{i.message}</span>
-                <span className="cell-muted">{i.created_at || '-'}</span>
+                <span className="cell-muted">{formatDate(i.created_at || i.createdAt || i.date)}</span>
+                <span className="table-actions">
+                  <a className="btn btn-ghost small" href={`/properties/${i.property_id || i.property?.id || ''}`}>
+                    Lihat
+                  </a>
+                  <button className="btn btn-ghost small" onClick={() => handleDeleteInquiry(i.id)}>
+                    Hapus
+                  </button>
+                </span>
               </div>
             )}
           />
@@ -108,23 +140,28 @@ export default function BuyerDashboard() {
       </section>
 
       <section className={`card p-5 space-y-3 ${tab === 'favorites' ? '' : 'hidden'}`}>
-        <SectionHeader title="Tambah Favorit" subtitle="Simpan properti yang Anda suka." />
-        {loadingProps ? (
+        <SectionHeader title="Favorit Saya" subtitle="Daftar properti yang Anda simpan." />
+        {loadingFav ? (
           <p className="text-slate-600">Memuat...</p>
-        ) : properties.length === 0 ? (
-          <p className="text-slate-600">Belum ada data.</p>
+        ) : favorites.length === 0 ? (
+          <p className="text-slate-600">Belum ada favorit.</p>
         ) : (
           <Table
             columns={['Judul', 'Harga', 'Tipe', 'Aksi']}
             gridTemplateColumns="2fr 1fr 1fr auto"
-            data={properties}
+            data={favorites}
             renderRow={(p) => (
               <div key={p.id} className="table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr auto' }}>
                 <span className="cell-strong">{p.title}</span>
                 <span className="cell-muted">{formatPrice(p.price)}</span>
                 <span className="cell-badge">{p.type}</span>
                 <span className="table-actions">
-                  <button className="btn btn-primary small" onClick={() => handleFavorite(p.id)}>Favorite</button>
+                  <a className="btn btn-ghost small" href={`/properties/${p.id}`}>
+                    Detail
+                  </a>
+                  <button className="btn btn-ghost small" onClick={() => handleDeleteFavorite(p.id)}>
+                    Hapus
+                  </button>
                 </span>
               </div>
             )}

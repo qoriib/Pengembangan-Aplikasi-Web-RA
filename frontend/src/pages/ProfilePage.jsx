@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { me as apiMe } from '../services/api';
+import { useToast } from '../context/ToastContext';
 
 export default function ProfilePage() {
   const { user, updateProfile, logout } = useAuth();
+  const { showToast } = useToast();
   const [profile, setProfile] = useState({ name: '', email: '', phone: '', role: '' });
   const [password, setPassword] = useState('');
-  const [status, setStatus] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +26,7 @@ export default function ProfilePage() {
           role: fresh.role || '',
         });
       } catch (err) {
-        setStatus('Gagal memuat profil');
+        showToast('Gagal memuat profil', 'error');
       }
     };
     load();
@@ -33,7 +34,6 @@ export default function ProfilePage() {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setStatus('');
     try {
       const payload = {
         name: profile.name,
@@ -41,11 +41,11 @@ export default function ProfilePage() {
       };
       if (password) payload.password = password;
       const updated = await updateProfile(payload);
-      setStatus('Profil diperbarui');
+      showToast('Profil diperbarui', 'success');
       setProfile((prev) => ({ ...prev, ...updated }));
       setPassword('');
     } catch (err) {
-      setStatus(err.message || 'Gagal memperbarui profil');
+      showToast(err.message || 'Gagal memperbarui profil', 'error');
     }
   };
 
@@ -103,7 +103,6 @@ export default function ProfilePage() {
             </button>
           </div>
         </form>
-        {status && <p className="text-sm text-slate-700">{status}</p>}
       </section>
     </main>
   );
